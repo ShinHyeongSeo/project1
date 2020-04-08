@@ -3,6 +3,7 @@
 void create_record();
 void read_record();
 void list_record();
+void update_record();
 void all_info_record();
 void load_file();
 void save_file();
@@ -13,7 +14,7 @@ int main()
    int menu;
    while(1)
    {
-      printf("\nMenu : 1.Create 2.Read 3.List 4.Report 5.Load file 6.Save file 7.Save Report  0.Quit > ");
+      printf("\nMenu : 1.Create 2.Read 3.Update 4.List 5.Report 6.Load file 7.Save file 8.Save Report  0.Quit > ");
       scanf("%d",&menu);
       printf("\n");
       
@@ -26,18 +27,21 @@ int main()
             read_record();
             break;
          case 3:
-            list_record();
+            update_record();
             break;
          case 4:
-            all_info_record();
+            list_record();
             break;
          case 5:
-            load_file();
+            all_info_record();
             break;
          case 6:
-            save_file();
+            load_file();
             break;
          case 7:
+            save_file();
+            break;
+         case 8:
             save_info_record();
             break;
          case 0:
@@ -147,6 +151,93 @@ void read_record()
             k = records[i];
             printf("%d. %s\n", i+1, m_to_string(k));
          }
+      }
+   }
+}
+void update_record()
+{
+   int menu,size = 0, i;
+   char name[100];
+   char category[100];
+   char company[100];
+   int min_sell, max_sell;
+   int price, sell, sum_price = 0;
+   T_Record* records[MAX_ITEMS];
+   T_Record* k;
+
+   printf("Menu : 1.상품명 2.카테고리 3.제조사 4.판매량 5.전체 >  ");
+   scanf("%d",&menu);
+
+   switch(menu)
+   {
+      case 1:
+         printf("상품명을 입력해주세요 >");
+         scanf("%s",name);
+         k = m_search_by_name(name);
+         if(k) {
+            printf("변경할 정보를 입력해주세요\n");
+            printf("상품명 > ");
+            scanf("%s",name);
+            printf("카테고리 > ");
+            scanf("%s",category);
+            printf("제조사 > ");
+            scanf("%s",company);
+            printf("가격 > ");
+            scanf("%d",&price);
+            printf("판매량 > ");
+            scanf("%d",&sell);
+            sum_price = price * sell;
+            m_update_by_name(k,name,category,company,price,sell,sum_price);
+            printf("해당 레코드의 정보가 변경되었습니다!\n");
+         }
+         else {
+            printf("해당하는 상품이 없습니다!\n");
+         }
+         break;
+      case 2:
+         printf("카테고리를 입력해주세요 > ");
+         scanf("%s",category);
+         size = m_get_all_by_category(records,category);
+         break;
+      case 3:
+         printf("제조사를 입력해주세요 > ");
+         scanf("%s",company);
+         size = m_get_all_by_company(records,company);
+         break;
+      case 4:
+         printf("최소 판매량을 입력해주세요 > ");
+         scanf("%d",&min_sell);
+         printf("최대 판매량을 입력해주세요 > ");
+         scanf("%d",&max_sell);
+         size = m_get_all_by_sell(records,min_sell,max_sell);
+         break;
+      case 5:
+          m_get_all(records);
+          size = m_count();
+         break;
+      default:
+         printf("잘못된 메뉴번호를 입력하였습니다!!");
+   }
+   if(menu != 1) {
+      if(size > 0) {
+         printf("변경할 정보를 입력해주세요\n");
+         printf("카테고리 > ");
+         scanf("%s",category);
+         printf("제조사 > ");
+         scanf("%s",company);
+         printf("가격 > ");
+         scanf("%d",&price);
+         printf("판매량 > ");
+         scanf("%d",&sell);
+         sum_price = price * sell;
+         for(i = 0; i < size; i++) {
+            k = records[i];
+            m_update_by_another(k,category,company,price,sell,sum_price);
+         }
+         printf("%d개의 레코드의 정보가 변경되었습니다!",size);
+      }
+      else {
+        printf("해당하는 상품이 없습니다!\n");
       }
    }
 }

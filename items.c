@@ -70,6 +70,22 @@ T_Record* m_search_by_name(char* n)
     return NULL;
 }
 
+void m_update_by_name(T_Record* k, char* n, char* cat, char* com, int p, int s, int s_p) {
+   strcpy(k->name,n);
+   strcpy(k->category,cat);
+   strcpy(k->company,com);
+   k->price = p;
+   k->sell = s;
+   k->sum_price = s_p;
+}
+
+void m_update_by_another(T_Record* k, char* cat, char* com, int p, int s, int s_p) {
+   strcpy(k->category,cat);
+   strcpy(k->company,com);
+   k->price = p;
+   k->sell = s;
+   k->sum_price = s_p;
+}
 char* m_to_string(T_Record* k){
     static char str[80];
     sprintf(str, "%s / %s / %s / %d / %d / %d", k->name, k->category, k->company, k->price, k->sell, k->sum_price);
