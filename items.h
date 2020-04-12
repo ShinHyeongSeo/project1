@@ -21,12 +21,10 @@ int m_count();
 void m_create(char* n, char* cat, char* com, int p, int s, int s_p);
 
 T_Record* m_search_by_name(char* n);
-T_Record* m_search_by_category(char* cat);
-T_Record* m_search_by_company(char* com);
-T_Record* m_search_by_sell(int min_sell, int max_sell);
 
 void m_update_by_name(T_Record* k, char* n, char* cat, char* com , int p, int s, int s_p);
 void m_update_by_another(T_Record* k, char* cat, char* com, int p, int s, int s_p);
+void m_delete(T_Record* k, int menu);
 void m_delete_all();
 
 char* m_to_string(T_Record *k);

@@ -57,7 +57,7 @@ void m_create(char* n, char* cat, char* com, int p, int s, int s_p)
 T_Record* m_search_by_name(char* n)
 {
     int i;
-    for(i=0; i<_count; i++)
+    for(i=0; i<MAX_ITEMS; i++)
     {
         if(items[i]!=NULL && strcmp(items[i]->name, n)==0)
         {
@@ -77,6 +77,9 @@ void m_update_by_name(T_Record* k, char* n, char* cat, char* com, int p, int s, 
    k->price = p;
    k->sell = s;
    k->sum_price = s_p;
+   #ifdef DEBUG
+      printf("[DEBUG] %s 상품 정보 업데이트 완료\n",k->name);
+   #endif
 }
 
 void m_update_by_another(T_Record* k, char* cat, char* com, int p, int s, int s_p) {
@@ -85,6 +88,9 @@ void m_update_by_another(T_Record* k, char* cat, char* com, int p, int s, int s_
    k->price = p;
    k->sell = s;
    k->sum_price = s_p;
+   #ifdef DEBUG
+      printf("[DEBUG] %s 상품 정보 업데이트 완료\n",k->name);
+   #endif
 }
 char* m_to_string(T_Record* k){
     static char str[80];
@@ -121,7 +127,7 @@ int m_get_all_by_category(T_Record* a[], char* cat)
 {
     // 상품카테고리가 문자열과 일치하는 모든 레코드 포인터의 배열 만들기    
     int i, c=0;
-    for(i=0; i<_count; i++){
+    for(i=0; i<MAX_ITEMS; i++){
         if(items[i]!=NULL && strcmp(items[i]->category, cat) == 0)
         {
             a[c]=items[i];
@@ -137,7 +143,7 @@ int m_get_all_by_company(T_Record* a[], char* com)
 {
     // 상품제조사가 문자열과 일치하는 모든 레코드 포인터의 배열 만들기    
     int i, c=0;
-    for(i=0; i<_count; i++){
+    for(i=0; i<MAX_ITEMS; i++){
         if(items[i]!=NULL && strcmp(items[i]->company, com) == 0)
         {
             a[c]=items[i];
@@ -149,12 +155,12 @@ int m_get_all_by_company(T_Record* a[], char* com)
     #endif
     return c;
 }
-int m_get_all_by_sell(T_Record* a[], int p1, int p2)
+int m_get_all_by_sell(T_Record* a[], int s1, int s2)
 {
     // 상품판매량의 범위가 문자열과 일치하는 모든 레코드 포인터의 배열 만들기    
     int i, c=0;
-    for(i=0; i<_count; i++){
-        if(items[i]!=NULL && p1 <= items[i]->sell && items[i]->sell <= p2)
+    for(i=0; i<MAX_ITEMS; i++){
+        if(items[i]!=NULL && s1 <= items[i]->sell && items[i]->sell <= s2)
         {
             a[c]=items[i];
             c++;
@@ -166,6 +172,35 @@ int m_get_all_by_sell(T_Record* a[], int p1, int p2)
     return c;
 }
 
+void m_delete(T_Record* k, int menu)
+{
+   int i, index;
+   for(i=0; i<MAX_ITEMS; i++) {
+      if(menu == 1 && items[i]->name == k->name) {
+         index=i;
+         break;
+      }
+      else if(menu == 2 && items[i]->category == k->category) {
+         index = i;
+         break;
+      }
+      else if(menu == 3 && items[i]->company == k->company) {
+         index = i;
+         break;
+      }
+      else if(menu == 4 && items[i] != NULL && items[i]->sell == k->sell) {
+         index = i;
+         break;
+      }
+   }
+   free(k);
+   items[index] = NULL;
+   _count--;
+   #ifdef DEBUG
+      printf("\n[DEBUG] %d번째 레코드 삭제 \n",index);
+   #endif
+}
+
 void m_delete_all()
 {
     // 모든 레코드 제거    
@@ -175,9 +210,9 @@ void m_delete_all()
             free(items[i]);
         }
         #ifdef DEBUG
-           if(items[i]->name != NULL) {
-              printf("\n[DEBUG] %s 상품정보 삭제완료\n",items[i]->name);
-           }
+        if(items[i]->name != NULL) {
+           printf("\n[DEBUG] %s 상품정보 삭제완료\n",items[i]->name);
+        }
         #endif
         items[i] = NULL;
     }
@@ -261,7 +296,6 @@ char* m_info_company(T_Record* k, int index)
    #ifdef DEBUG
       printf("\n[DEBUG] %s제조사의  보고서 작성 완료\n",k->company);
    #endif
-
 
    return str;
 }

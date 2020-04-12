@@ -4,6 +4,7 @@ void create_record();
 void read_record();
 void list_record();
 void update_record();
+void delete_record();
 void all_info_record();
 void load_file();
 void save_file();
@@ -14,7 +15,7 @@ int main()
    int menu;
    while(1)
    {
-      printf("\nMenu : 1.Create 2.Read 3.Update 4.List 5.Report 6.Load file 7.Save file 8.Save Report  0.Quit > ");
+      printf("\nMenu : 1.Create 2.Read 3.Update 4.Delete 5.List 6.Report 7.Load file 8.Save file 9.Save Report  0.Quit > ");
       scanf("%d",&menu);
       printf("\n");
       
@@ -30,18 +31,21 @@ int main()
             update_record();
             break;
          case 4:
-            list_record();
+            delete_record();
             break;
          case 5:
-            all_info_record();
+            list_record();
             break;
          case 6:
-            load_file();
+            all_info_record();
             break;
          case 7:
-            save_file();
+            load_file();
             break;
          case 8:
+            save_file();
+            break;
+         case 9:
             save_info_record();
             break;
          case 0:
@@ -218,7 +222,7 @@ void update_record()
       default:
          printf("잘못된 메뉴번호를 입력하였습니다!!");
    }
-   if(menu != 1) {
+   if(menu == 2 || menu == 3 || menu == 4 || menu == 5) {
       if(size > 0) {
          printf("변경할 정보를 입력해주세요\n");
          printf("카테고리 > ");
@@ -242,6 +246,72 @@ void update_record()
    }
 }
 
+void delete_record()
+{
+   int menu,size = 0, i;
+   char name[100];
+   char category[100];
+   char company[100];
+   int min_sell, max_sell;
+   T_Record* records[MAX_ITEMS];
+   T_Record* k;
+
+   printf("Menu : 1.상품명 2.카테고리 3.제조사 4.판매량 5.전체 >  ");
+   scanf("%d",&menu);
+
+   switch(menu)
+   {
+      case 1:
+         printf("상품명을 입력해주세요 >");
+         scanf("%s",name);
+         k = m_search_by_name(name);
+         if(k) {
+            m_delete(k,menu);
+            printf("해당 레코드가 삭제되었습니다!\n");
+         }
+         else {
+            printf("해당하는 상품이  없습니다!\n");
+         }
+            break;
+      case 2:
+         printf("카테고리를 입력해주세요 > ");
+         scanf("%s",category);
+         size = m_get_all_by_category(records,category);
+         break;
+      case 3:
+         printf("제조사를 입력해주세요 > ");
+         scanf("%s",company);
+         size = m_get_all_by_company(records,company);
+         break;
+      case 4:
+         printf("최소 판매량을 입력해주세요 > ");
+         scanf("%d",&min_sell);
+         printf("최대 판매량을 입력해주세요 > ");
+         scanf("%d",&max_sell);
+         size = m_get_all_by_sell(records,min_sell,max_sell);
+         break;
+      case 5:
+         m_delete_all();
+         printf("전체 레코드가 삭제되었습니다!\n");
+         break;
+      default:
+         printf("잘못된 메뉴번호를 입력하였습니다!!");
+   }
+   if(menu == 2 || menu == 3 || menu == 4) {
+      if(size > 0) {
+         for(i = 0; i < size; i++) {
+            k = records[i];
+            m_delete(k,menu);
+         }
+         printf("%d개의 레코드가 삭제되었습니다!\n",size);
+      }
+      else {
+        printf("해당하는 상품이 없습니다!\n");
+      }
+   }
+
+
+}
 void list_record()
 {
    int i, size;
