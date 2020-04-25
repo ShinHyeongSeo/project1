@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_ITEMS 5
+#define MAX_ITEMS 50
 
 typedef struct st_item {
    char name[100];
@@ -40,3 +40,5 @@ char* m_info_all();
 char* m_info_category(T_Record* k, int index);
 char* m_info_company(T_Record* k, int index);
 
+int m_optimize_all();
+void m_sort_all();

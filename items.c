@@ -4,7 +4,7 @@
 T_Record* items[MAX_ITEMS]; // 상품정보데이터 (전역)
 int _count = 0;
 
-int m_is_available()
+int m_is_available() // 레코드에 정보를 저장할 공간이 있는지 확인
 {
     int i;
     for(i=0; i<MAX_ITEMS; i++)
@@ -17,7 +17,7 @@ int m_is_available()
     return 0;
 }
 
-int m_first_available()
+int m_first_available() // 레코드의 빈 공간 중 인덱스 번호가 가장 빠른 번호 찾기
 {
     int i;
     for(i=0; i<MAX_ITEMS; i++)
@@ -30,12 +30,12 @@ int m_first_available()
     return -1;
 }
 
-int m_count()
+int m_count() // 현재 저장되어있는 데이터의 개수 확인
 {
     return _count;
 }
 
-void m_create(char* n, char* cat, char* com, int p, int s, int s_p)
+void m_create(char* n, char* cat, char* com, int p, int s, int s_p) // 레코드 생성
 {
     int index = m_first_available();
     items[index] = (T_Record*)malloc(sizeof(T_Record));
@@ -54,7 +54,7 @@ void m_create(char* n, char* cat, char* com, int p, int s, int s_p)
     #endif
 }
 
-T_Record* m_search_by_name(char* n)
+T_Record* m_search_by_name(char* n) // 이름이 일치하는 레코드 찾기
 {
     int i;
     for(i=0; i<MAX_ITEMS; i++)
@@ -70,7 +70,7 @@ T_Record* m_search_by_name(char* n)
     return NULL;
 }
 
-void m_update_by_name(T_Record* k, char* n, char* cat, char* com, int p, int s, int s_p) {
+void m_update_by_name(T_Record* k, char* n, char* cat, char* com, int p, int s, int s_p) { // 이름이 일치하는 레코드 업데이트
    strcpy(k->name,n);
    strcpy(k->category,cat);
    strcpy(k->company,com);
@@ -82,7 +82,7 @@ void m_update_by_name(T_Record* k, char* n, char* cat, char* com, int p, int s, 
    #endif
 }
 
-void m_update_by_another(T_Record* k, char* cat, char* com, int p, int s, int s_p) {
+void m_update_by_another(T_Record* k, char* cat, char* com, int p, int s, int s_p) { // 카테고리, 제조사, 판매량의 범위가 일치하는 레코드 업데이트
    strcpy(k->category,cat);
    strcpy(k->company,com);
    k->price = p;
@@ -92,12 +92,13 @@ void m_update_by_another(T_Record* k, char* cat, char* com, int p, int s, int s_
       printf("[DEBUG] %s 상품 정보 업데이트 완료\n",k->name);
    #endif
 }
-char* m_to_string(T_Record* k){
+char* m_to_string(T_Record* k){ // 레코드를 상품명/카테고리/제조사/가격/판매량/총 판매수익 순으로 나타내줌
     static char str[80];
+
     sprintf(str, "%s / %s / %s / %d / %d / %d", k->name, k->category, k->company, k->price, k->sell, k->sum_price);
     return str;
 }
-char* m_to_string_save(T_Record* k) {
+char* m_to_string_save(T_Record* k) { // 레코드를 상품명/카테고리/제조사/가격/판매량/ 총 판매수익 순으로 나타내고 파일에 저장
    static char str[80];
    sprintf(str,"%s %s %s %d %d %d",k->name, k->category, k->company, k->price, k-> sell, k->sum_price);
    #ifdef DEBUG
@@ -106,13 +107,12 @@ char* m_to_string_save(T_Record* k) {
    return str;
 }
 
-void m_get_all(T_Record* a[])
+void m_get_all(T_Record* a[]) // 저장되어잇는 레코드 모두 가져오기
 {
    int i, c = 0;
    for(i = 0; i < MAX_ITEMS; i++)
    {
-      if(items[i] != NULL)
-      {
+      if(items[i] != NULL) {
          a[c] = items[i];
          c++;
       }
@@ -172,7 +172,7 @@ int m_get_all_by_sell(T_Record* a[], int s1, int s2)
     return c;
 }
 
-void m_delete(T_Record* k, int menu)
+void m_delete(T_Record* k, int menu) // 레코드 삭제
 {
    int i, index;
    for(i=0; i<MAX_ITEMS; i++) {
@@ -220,69 +220,75 @@ void m_delete_all()
 
 } 
 
-char* m_info_all()
+char* m_info_all() // 전체 레코드에 대한 보고서
 {
    static char str[1024];
-   int i, size;
-   int all_price = 0;
+   int i,size;
+   long all_price = 0;
    size = m_count();
 
-   for(i = 0; i < size; i++)
+   for(i = 0; i < MAX_ITEMS; i++)
    {
-      all_price += items[i]->sum_price;
+      if(items[i] != NULL) {
+         all_price += items[i]->sum_price;
+      }
    }
 
-   sprintf(str, "총 상품 개수 : %d개\n총 판매수익 : %d원\n\n",size, all_price);
+   sprintf(str, "총 상품 개수 : %d개\n총 판매수익 : %ld원\n\n",size, all_price);
    #ifdef DEBUG
       printf("\n[DEBUG] 총 상품%d개에 대한 보고서 작성 완료\n",size);
    #endif
    return str;
 }
 
-char* m_info_category(T_Record* k, int index)
+char* m_info_category(T_Record* k, int index) // 카테고리별 보고서
 {
    static char str[100];
-   int i, size;
-   int all_price = 0, size2 = 0;
+   int i;
+   long all_price = 0;
+   int size = 0,size2 = 0;
+   T_Record* a[MAX_ITEMS];
+   m_get_all(a);
    size = m_count();
 
    for(i = 0; i < size; i++)
    {
-      if(strcmp(k->category, items[i]->category) == 0)
-      {
+      if(strcmp(a[i]->category,k->category) == 0) {
          if(i >= index)
          {
-            size2++;
-            all_price += items[i]->sum_price;
+             size2++;
+             all_price += a[i]->sum_price;
          }
          else
          {
-            return 0;
+             return 0;
          }
       }
    }
-   sprintf(str,"%s카테고리의 상품 개수 : %d개\n%s카테고리의 총 판매수익 : %d원\n\n",k->category,size2,k->category,all_price);
+   sprintf(str,"%s카테고리의 상품 개수 : %d개\n%s카테고리의 총 판매수익 : %ld원\n\n",k->category,size2,k->category,all_price);
    #ifdef DEBUG
       printf("\n[DEBUG] %s 카테고리의  보고서 작성 완료\n",k->category);
    #endif
 
    return str;
 }
-char* m_info_company(T_Record* k, int index)
+char* m_info_company(T_Record* k, int index) // 제조사별 보고서
 {
    static char str[100];
-   int i, size;
-   int all_price = 0, size2 = 0;
+   int i;
+   long all_price = 0;
+   int size = 0,size2 = 0;
+   T_Record* a[MAX_ITEMS];
+   m_get_all(a);
    size = m_count();
 
    for(i = 0; i < size; i++)
    {
-      if(strcmp(k->company, items[i]->company) == 0)
-      {
-         if(i >= index)
+      if(strcmp(a[i]->company,k->company) == 0) {
+         if(i >= index && strcmp(a[i]->company,k->company) == 0)
          {
             size2++;
-            all_price += items[i]->sum_price;
+            all_price += a[i]->sum_price;
          }
          else
          {
@@ -290,7 +296,7 @@ char* m_info_company(T_Record* k, int index)
          }
       }
    }
-   sprintf(str,"%s제조사의 상품 개수 : %d개\n%s제조사의 총 판매수익 : %d원\n\n", k->company, size2, k->company, all_price);
+   sprintf(str,"%s제조사의 상품 개수 : %d개\n%s제조사의 총 판매수익 : %ld원\n\n", k->company, size2, k->company, all_price);
 
 
    #ifdef DEBUG
@@ -299,3 +305,66 @@ char* m_info_company(T_Record* k, int index)
 
    return str;
 }
+
+int m_optimize_all() // 전체 레코드 최적화
+{ 
+    int i,j,count = 0;
+    if(_count == 0) {
+       return -1;
+    }
+
+    for(i = 0; i < _count; i++) {
+       if(items[i] == NULL) {
+          count++;
+       }
+    }
+    if(count == 0) {
+       return 1;
+    }
+
+    else {
+       for(i = 0; i < MAX_ITEMS; i++) {
+          if(items[i] == NULL) {
+             for(j = i; j < MAX_ITEMS; j++) {
+                if(items[j] != NULL) {
+                   items[i] = items[j];
+                   items[j] = NULL;
+                   break;
+                }
+             }
+          }   
+       }
+    }  
+
+
+   #ifdef DEBUG
+   printf("[DEBUG] 저장된 상품명 순서 : ");
+   for(i = 0; i < MAX_ITEMS; i++) {
+      printf("%s ",items[i]->name);
+   }
+   printf("\n");
+   #endif
+
+   return 0;
+}
+
+void m_sort_all() { // 전체 레코드 카테고리순, 총 판매수익 순으로 정렬
+   int i,j;
+   T_Record* temp;
+   
+   for(i = 0; i < MAX_ITEMS; i++) {
+      for(j = i+1; j < MAX_ITEMS; j++) {
+         if(items[i] != NULL && items[j] != NULL) {
+            if(strcmp(items[i]->category,items[j]->category) > 0 || (strcmp(items[i]->category,items[j]->category) == 0 && items[i]->sum_price < items[j]->sum_price)) {
+               temp = items[i];
+               items[i] = items[j];
+               items[j] = temp;
+          }
+        }
+     }
+   }
+}
+
+
+
+

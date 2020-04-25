@@ -9,13 +9,15 @@ void all_info_record();
 void load_file();
 void save_file();
 void save_info_record();
+void optimize_record();
+void sort_record();
 int main()
 {
    m_delete_all();
    int menu;
    while(1)
    {
-      printf("\nMenu : 1.Create 2.Read 3.Update 4.Delete 5.List 6.Report 7.Load file 8.Save file 9.Save Report  0.Quit > ");
+      printf("\nMenu : 1.Create 2.Read 3.Update 4.Delete 5.List 6.Report 7.Load file 8.Save file 9.Save Report 10.Optimize Record 11.Sort Record  0.Quit > ");
       scanf("%d",&menu);
       printf("\n");
       
@@ -47,6 +49,12 @@ int main()
             break;
          case 9:
             save_info_record();
+            break;
+         case 10:
+            optimize_record();
+            break;
+         case 11:
+            sort_record();
             break;
          case 0:
          default:
@@ -109,13 +117,13 @@ void read_record()
       case 1:
          printf("상품명을 입력해주세요 > ");
          scanf("%s",name);
-         k = m_search_by_name(name);
+         k = m_search_by_name(name); // 일치하는 상품명 찾기
 
-         if(k)
+         if(k) // 일치하는 상품명이 있으면
          {
             printf("%s\n",m_to_string(k));
          }
-         else
+         else // 일치하는 상품명이 없으면
          {
             printf("해당하는 상품이 없습니다!.\n");
          }
@@ -123,19 +131,19 @@ void read_record()
       case 2:
          printf("카테고리를 입력해주세요 > ");
          scanf("%s",category);
-         size = m_get_all_by_category(records, category);
+         size = m_get_all_by_category(records, category); // 카테고리가 일치하는 상품정보레코드들 records에 저장 후 size에 크기 저장
          break;
       case 3:
          printf("제조사를 입력해주세요 > ");
          scanf("%s",company);
-         size = m_get_all_by_company(records, company);
+         size = m_get_all_by_company(records, company); // 제조사가 일치하는 상품정보레코드들 records에 저장 후 size에 크기 저장
          break;
       case 4:
          printf("최소 판매량을 입력해주세요 > ");
          scanf("%d", &min_sell);
          printf("최대 판매량을 입력해주세요 > ");
          scanf("%d", &max_sell);
-         size = m_get_all_by_sell(records, min_sell, max_sell);
+         size = m_get_all_by_sell(records, min_sell, max_sell); // 제조사가 일치하는 상품정보레크드들 records에 저장 후 size에 크기 저장
          break;
       default:
          printf("잘못된 메뉴번호를 입력하였습니다!!");
@@ -153,7 +161,7 @@ void read_record()
          for(i = 0; i < size; i++)
          {
             k = records[i];
-            printf("%d. %s\n", i+1, m_to_string(k));
+            printf("%d. %s\n", i+1, m_to_string(k)); // 입력값과 일치하는 상품정보레코드들 출력
          }
       }
    }
@@ -177,9 +185,9 @@ void update_record()
       case 1:
          printf("상품명을 입력해주세요 >");
          scanf("%s",name);
-         k = m_search_by_name(name);
-         if(k) {
-            printf("변경할 정보를 입력해주세요\n");
+         k = m_search_by_name(name); // 일치하는 상품명 찾기
+         if(k) { // 일치하는 상품명이 있으면
+            printf("변경할 정보를 입력해주세요\n"); // 변경할 정보 입력
             printf("상품명 > ");
             scanf("%s",name);
             printf("카테고리 > ");
@@ -194,19 +202,19 @@ void update_record()
             m_update_by_name(k,name,category,company,price,sell,sum_price);
             printf("해당 레코드의 정보가 변경되었습니다!\n");
          }
-         else {
+         else { // 일치하는 상품명 없으면
             printf("해당하는 상품이 없습니다!\n");
          }
          break;
       case 2:
          printf("카테고리를 입력해주세요 > ");
          scanf("%s",category);
-         size = m_get_all_by_category(records,category);
+         size = m_get_all_by_category(records,category); 
          break;
       case 3:
          printf("제조사를 입력해주세요 > ");
          scanf("%s",company);
-         size = m_get_all_by_company(records,company);
+         size = m_get_all_by_company(records,company);  
          break;
       case 4:
          printf("최소 판매량을 입력해주세요 > ");
@@ -224,7 +232,7 @@ void update_record()
    }
    if(menu == 2 || menu == 3 || menu == 4 || menu == 5) {
       if(size > 0) {
-         printf("변경할 정보를 입력해주세요\n");
+         printf("변경할 정보를 입력해주세요\n"); // 변경할 정보가 카테고리,제조사,판매량의 범위가 일치하는 상품정보레코드일때
          printf("카테고리 > ");
          scanf("%s",category);
          printf("제조사 > ");
@@ -272,7 +280,7 @@ void delete_record()
          else {
             printf("해당하는 상품이  없습니다!\n");
          }
-            break;
+         break;
       case 2:
          printf("카테고리를 입력해주세요 > ");
          scanf("%s",category);
@@ -317,8 +325,8 @@ void list_record()
    int i, size;
    printf("모든 상품정보레코드\n");
    T_Record* records[MAX_ITEMS];
-   m_get_all(records);
-   size = m_count();
+   m_get_all(records); // 전체상품레코드 records에 저장
+   size = m_count(); // size에 크기 저장
 
    for(i = 0; i < size; i++)
    {
@@ -329,20 +337,20 @@ void list_record()
 
 void all_info_record()
 {
-   int i, size, index;
+   int i,size,index;
    char* result;
    T_Record* records[MAX_ITEMS];
    T_Record* k;
-   m_get_all(records);
-   size = m_count();
+   m_get_all(records); // 전체 상품정보레코드 records에 저장
 
+   size = m_count(); // 크기 저장
    printf("%s",m_info_all());
 
    for(i = 0; i < size; i++)
-   {
+   {  
       k = records[i];
       index = i;
-      result = m_info_category(k,index);
+      result = m_info_category(k,index); // 카테고리별 보고서 출력
       if(result != 0)
       {        
          printf("%s",result);
@@ -353,11 +361,11 @@ void all_info_record()
    {
       k = records[i];
       index = i;
-      result = m_info_company(k,index);
+      result = m_info_company(k,index); // 제조사별 보고서 출력
       if(result != 0)
       {
          printf("%s",result);
-      }   
+      }
    }
 }
 void load_file() {
@@ -376,23 +384,22 @@ void load_file() {
    int price, sell, sum_price;
 
    while(!feof(f)) {
-      if(!m_is_available()) {
+      if(!m_is_available()) { // 데이터가 최대개수를 넘으면
          printf("%d개의 상품까지만 저장할 수 있습니다!\n",MAX_ITEMS);
          break;
       }
       int n = fscanf(f,"%s %s %s %d %d %d", name, category, company, &price, &sell, &sum_price);
       if(n < 6) {
-         if(n >= 0) {
+         if(n >= 0) { // 파일의 형식이 잘못되었을 때
          printf("파일명/카테고리/제조사/가격/판매량/총 판매수익 순으로 파일을 다시 작성해주세요!\n");
          }
          break;
       }
-      if(m_search_by_name(name)) {
+      if(m_search_by_name(name)) { // 중복되는 상품명이 존재할 때
             printf("중복된 상품명(%s)의 상품은 한번만 저장됩니다.\n",name);
             continue;
       }
       m_create(name,category,company,price,sell,sum_price);
-      //printf("[LOAD] load %s\n", name);
    }
    printf("%d개의 정보를 파일에서 읽어왔습니다!\n",m_count());
    fclose(f);
@@ -403,7 +410,7 @@ void save_file() {
    printf("모든 레코드를 items.txt 파일에 저장합니다.\n");
    int size = m_count();
    T_Record* records[MAX_ITEMS];
-   m_get_all(records);
+   m_get_all(records); // 전체 상품정보 레코드 records에 저장
    for(int i = 0; i < size; i++) {
       T_Record* k = records[i];
       fprintf(f,"%s\n",m_to_string_save(k));
@@ -443,4 +450,26 @@ void save_info_record() {
      }
   }
   fclose(f); 
+}
+
+void optimize_record()
+{
+   int value;
+   value = m_optimize_all();
+   if(value == -1) {
+      printf("레코드가 비어있어 최적화할 레코드가 없습니다!\n");
+   }
+   else if(value == 1) {
+      printf("상품정보레코드가 이미 최적화되어있습니다.\n");
+   }
+  
+   else {
+      printf("모든 상품정보레코드가 최적화되었습니다!\n");
+   }
+}
+
+void sort_record()
+{
+   m_sort_all();
+   printf("모든 상품정보레코드를 카테고리순, 총 판매수익순으로 정렬했습니다.\n");
 }
