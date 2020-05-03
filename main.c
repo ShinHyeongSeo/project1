@@ -470,6 +470,13 @@ void optimize_record()
 
 void sort_record()
 {
-   m_sort_all();
-   printf("모든 상품정보레코드를 카테고리순, 총 판매수익순으로 정렬했습니다.\n");
+   int value;
+   value = m_sort_all();
+   if(value == -1) {
+      printf("상품정보레코드 전체가 비어있어 정렬할 수 없습니다!\n");
+   }
+
+   else {
+      printf("모든 상품정보레코드를 카테고리순, 총 판매수익순으로 정렬했습니다.\n");
+   }
 }

@@ -41,4 +41,4 @@ char* m_info_category(T_Record* k, int index);
 char* m_info_company(T_Record* k, int index);
 
 int m_optimize_all();
-void m_sort_all();
+int m_sort_all();

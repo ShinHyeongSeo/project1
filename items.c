@@ -309,27 +309,27 @@ char* m_info_company(T_Record* k, int index) // 제조사별 보고서
 int m_optimize_all() // 전체 레코드 최적화
 { 
     int i,j,count = 0;
-    if(_count == 0) {
+    if(_count == 0) { // 전체 레코드가 비어있으면 -1 리턴
        return -1;
     }
 
-    for(i = 0; i < _count; i++) {
+    for(i = 0; i < _count; i++) { // 이미 전체레코드가 최적화되어있는지 검사
        if(items[i] == NULL) {
           count++;
        }
     }
-    if(count == 0) {
+    if(count == 0) { // 이미 최적화가 되어있으면 1 리턴
        return 1;
     }
 
-    else {
+    else { // 전체 레코드 최적화가 필요한 경우
        for(i = 0; i < MAX_ITEMS; i++) {
-          if(items[i] == NULL) {
+          if(items[i] == NULL) { // 빈 레코드를 만나면
              for(j = i; j < MAX_ITEMS; j++) {
-                if(items[j] != NULL) {
-                   items[i] = items[j];
-                   items[j] = NULL;
-                   break;
+                if(items[j] != NULL) { // 다음 레코드가 빈 레코드가 아니라면
+                   items[i] = items[j]; // 다음 레코드의 값을 현재 레코드에 저장 후
+                   items[j] = NULL; // 원래 다음에 있던 레코드를 NULL로 만든다 (NULL은 값을 서로 바꿀 수 없기 때문에 이 방법을 사용) 
+                   break; // 제일 가까운 비어있지 않은 레코드를 하나만 바꿔야하므로  break
                 }
              }
           }   
@@ -337,25 +337,29 @@ int m_optimize_all() // 전체 레코드 최적화
     }  
 
 
-   #ifdef DEBUG
+   #ifdef DEBUG // 디버그
    printf("[DEBUG] 저장된 상품명 순서 : ");
    for(i = 0; i < MAX_ITEMS; i++) {
-      printf("%s ",items[i]->name);
+      printf("%s ",items[i]->name); // 저장되어있는 상품명을 출력해 제대로 최적화가 되었는지 확인
    }
    printf("\n");
    #endif
 
-   return 0;
+   return 0; // 최적화를 마쳤으면 0리턴
 }
 
-void m_sort_all() { // 전체 레코드 카테고리순, 총 판매수익 순으로 정렬
+int m_sort_all() { // 전체 레코드 카테고리순, 총 판매수익 순으로 정렬
    int i,j;
    T_Record* temp;
    
+   if(_count == 0) { // 전체 레코드가 비어있으면 -1 리턴
+      return -1;
+   }
+
    for(i = 0; i < MAX_ITEMS; i++) {
       for(j = i+1; j < MAX_ITEMS; j++) {
-         if(items[i] != NULL && items[j] != NULL) {
-            if(strcmp(items[i]->category,items[j]->category) > 0 || (strcmp(items[i]->category,items[j]->category) == 0 && items[i]->sum_price < items[j]->sum_price)) {
+         if(items[i] != NULL && items[j] != NULL) { // 현재 레코드와 비교할 레코드가 NULL값이 아니면
+            if(strcmp(items[i]->category,items[j]->category) > 0 || (strcmp(items[i]->category,items[j]->category) == 0 && items[i]->sum_price < items[j]->sum_price)) { // 카테고리 오름차순으로 정렬, 만약 카테고리가 같다면 총 판매수익 내림차순으로 정렬
                temp = items[i];
                items[i] = items[j];
                items[j] = temp;
@@ -363,6 +367,7 @@ void m_sort_all() { // 전체 레코드 카테고리순, 총 판매수익 순으
         }
      }
    }
+   return 0; // 정렬이 완료되었다면 0리턴
 }
 
 
