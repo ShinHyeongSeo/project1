@@ -79,7 +79,11 @@ make main_debug -----> ./main
      
      
 ### 3. 오브젝트 파일과 실행파일 삭제 시
-make clean  
+make clean
+
+
+
+2020-06-10 체크완료!  
      
      
      
